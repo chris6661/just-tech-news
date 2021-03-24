@@ -3,8 +3,8 @@ const sequelize = require('../../config/connection');
 const {
   Post,
   User,
-  Vote,
-  Comment
+  Comment,
+  Vote
 } = require('../../models');
 
 // get all users
@@ -68,7 +68,6 @@ router.get('/:id', (req, res) => {
         }
       ]
     })
-
     .then(dbPostData => {
       if (!dbPostData) {
         res.status(404).json({
@@ -106,6 +105,29 @@ router.put('/upvote', (req, res) => {
       User
     })
     .then(updatedVoteData => res.json(updatedVoteData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+router.put('/:id', (req, res) => {
+  Post.update({
+      title: req.body.title
+    }, {
+      where: {
+        id: req.params.id
+      }
+    })
+    .then(dbPostData => {
+      if (!dbPostData) {
+        res.status(404).json({
+          message: 'No post found with this id'
+        });
+        return;
+      }
+      res.json(dbPostData);
+    })
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
